@@ -109,7 +109,11 @@ def process_files(args, changed_files, todo_files, license_info):
     """
     for src_filepath in args.filenames:
         with open(src_filepath) as src_file:
-            src_file_content = src_file.readlines()
+            try:
+                src_file_content = src_file.readlines()
+            except UnicodeDecodeError as err:
+                err.message="Failed to parse file {}.\n{}".format(src_filepath,err.message)
+                raise err from None
         if skip_license_insert_found(
                 src_file_content=src_file_content,
                 skip_license_insertion_comment=args.skip_license_insertion_comment,
